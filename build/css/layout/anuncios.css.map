@@ -1,0 +1,1 @@
+{"version":3,"sources":["layout/anuncios.scss","layout/anuncios.css"],"names":[],"mappings":"AAEA,SACI,qBCDJ","file":"anuncios.css","sourcesContent":["\r\n\r\n.anuncio{\r\n    background-color: lighten(#e1e1e1,5);\r\n}",".anuncio {\n  background-color: #eeeeee;\n}"]}

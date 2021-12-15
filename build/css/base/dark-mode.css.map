@@ -1,0 +1,1 @@
+{"version":3,"sources":["base/dark-mode.scss","base/dark-mode.css"],"names":[],"mappings":"AAAA,WACI,wBCCJ","file":"dark-mode.css","sourcesContent":[".dark-mode{\r\n    background-color: darken(#333333,10);\r\n}",".dark-mode {\n  background-color: #1a1a1a;\n}"]}

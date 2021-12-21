@@ -1,6 +1,6 @@
 <?php
 
-require 'includes/funciones.php';
+require 'includes/app.php';// cambio  funciones.php por app.php
 
 incluirTemplate('header'); ?>
 <main class="contenedor sección">

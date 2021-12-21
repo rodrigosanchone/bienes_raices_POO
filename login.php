@@ -2,7 +2,9 @@
 
 //conexión base de datos
 
-require 'includes/config/database.php';
+//require 'includes/config/database.php';
+//require 'includes/funciones.php';
+require 'includes/app.php';
 $db = conectarBD();
 
 //Autenticar el usuario 
@@ -68,7 +70,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
 
 }
 
-  require 'includes/funciones.php';
+//  require 'includes/funciones.php';
   
   incluirTemplate('header');?>
     <main class="contenedor sección">

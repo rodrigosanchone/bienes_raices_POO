@@ -1,14 +1,23 @@
 <?php
 
-require '../../includes/funciones.php';
-$auth= estaAutenticado();
-if(!$auth){
-  header('Location: /');
-}
+require '../../includes/app.php';
+
+use App\Propiedad;
+
+/* $propiedad = new Propiedad;
+
+/* echo "<pre>";
+var_dump($propiedad);
+echo  "</pre>"; */
+/*
+debuguear($propiedad); */
+
+
+estaAutenticado();
 
 //base de datos
 
-require '../../includes/config/database.php';
+
 $db = conectarBD();
 //consultar para obtener los vendedores
 $consulta  = "SELECT * FROM vendedores";

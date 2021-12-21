@@ -1,8 +1,8 @@
 <?php
   /**Importar base de datos */
-
-  require __DIR__.'/../config/database.php'; //puedo usar esta manera o la que sigue
-  //require '/includes/config/database.php'; //la ruta relativa es hacia el index o anncios.php
+  // Esta manera ya no sera necesaria
+  //require __DIR__.'/../config/database.php'; //puedo usar esta manera o la que sigue 
+  //require '/includes/config/database.php'; //la ruta relativa es hacia el index o anuncios.php
   $db = conectarBD();
 
   /**Consultar */

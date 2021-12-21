@@ -7,8 +7,10 @@ if(!$id){
   header('Location:/');
 }
 
+require 'includes/app.php';
+
 //importar la conexion
-require 'includes/config/database.php';
+//require 'includes/config/database.php';// ya noes es necesario 
 $db= conectarBD();
 
 //consultar la base de datos
@@ -24,8 +26,8 @@ if($resultado->num_rows===0){
 $propiedad = mysqli_fetch_assoc($resultado);
 
 
-  require 'includes/funciones.php';
-  
+  //require 'includes/funciones.php';
+ 
   incluirTemplate('header');?>
   
     <main class="contenedor sección contenido-centrado">

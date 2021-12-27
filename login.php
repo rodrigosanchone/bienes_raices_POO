@@ -52,7 +52,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
                         
                         header('Location: /admin');
 
-                        var_dump($auth);
+                      //  var_dump($auth);
 
                     }else{
                         $errores[]="El password es incorrecto";

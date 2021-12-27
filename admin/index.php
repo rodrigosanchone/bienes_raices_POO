@@ -1,17 +1,17 @@
 <?php
 
-require '../includes/funciones.php';
+require '../includes/app.php';
 
-$auth= estaAutenticado();
 
-if(!$auth){
-  header('Location: /');
-}
+estaAutenticado();
+
+
 
  
  //Importar la conexión  
- require '../includes/config/database.php';
-$db = conectarBD();
+ //require '../includes/config/database.php';
+  
+ $db = conectarBD();
 
  //Escribir el Query
  $query= "SELECT * FROM propiedades";

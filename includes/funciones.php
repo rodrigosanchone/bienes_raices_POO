@@ -6,23 +6,21 @@
 
 define('TEMPLATES_URL', __DIR__.'/templates'); // muevo estas constantes de app.php a funciones.php
 define('FUNCIONES_URL',__DIR__.'funciones.php');
+define('CARPETA_IMAGENES',__DIR__.'../../imagenes/');
 
 function incluirTemplate(string $nombre, bool $inicio = false){
     include TEMPLATES_URL ."/${nombre}.php";
 }
 
-function estaAutenticado(): bool{
+function estaAutenticado(){
         session_start();
-        
-
-     
 
         if(!$_SESSION['login']){
             header('Location /');
            
         }
 
-        return false;
+      
 }
 
 function debuguear($variable){

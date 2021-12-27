@@ -3,6 +3,13 @@
 require '../../includes/app.php';
 
 use App\Propiedad;
+use Intervention\Image\ImageManagerStatic as Image;
+/* $propiedad = new Propiedad;
+
+debuguear($propiedad); */
+
+$db = conectarBD();
+
 
 /* $propiedad = new Propiedad;
 
@@ -16,18 +23,18 @@ debuguear($propiedad); */
 estaAutenticado();
 
 //base de datos
-
-
 $db = conectarBD();
 //consultar para obtener los vendedores
 $consulta  = "SELECT * FROM vendedores";
-$resultado = mysqli_query($db, $consulta); 
+$resultado = mysqli_query($db, $consulta);
 /*   echo "<pre>";
   var_dump($_SERVER['REQUEST_METHOD']);
  echo "</pre>"; */
 
 //arreglo con mensaje de errores
-$errores = [];
+$errores = Propiedad::getErrores();
+
+debuguear($errores);
 
 $titulo = '';
 $precio = '';
@@ -40,105 +47,43 @@ $vendedorId = '';
 //ejecutare el código despues de que el usuario envia el formulario
 
 if ($_SERVER['REQUEST_METHOD'] === "POST") {
-  /*     echo "<pre>";
-    var_dump($_POST);
-    echo "</pre>"; 
+    
+    //crear nueva instancia 
+    $propiedad = new Propiedad($_POST);
+ 
+    /**subida de archivos */
+   
+    //generar un nombre unico para img
+    $nombreImagen =  md5(uniqid(rand(), true)) . ".jpg";
 
-    echo "<pre>";
-    var_dump($_FILES);
-    echo "</pre>";  */
+    //Setear la imagen
+     //Realizanmos un resize a la imagen con Intervetion
+     if($_FILES['imagen']['tmp_name']){
+        $image = Image::make($_FILES['imagen']['tmp_name'])->fit(800, 600);
+        $propiedad->setImagen($nombreImagen);
+     }
+    
 
-    //exit;
-
-    $titulo = mysqli_real_escape_string($db,$_POST['titulo']);
-    $precio = mysqli_real_escape_string($db,$_POST['precio']);
-    $descripcion = mysqli_real_escape_string($db,$_POST['descripcion']);
-    $habitaciones = mysqli_real_escape_string($db,$_POST['habitaciones']);
-    $wc = mysqli_real_escape_string($db,$_POST['wc']);
-    $estacionamiento = mysqli_real_escape_string($db,$_POST['estacionamiento']);
-    $vendedorId = mysqli_real_escape_string($db,$_POST['vendedor']);
-    $creado= date('Y/m/d');
-
-    //Asignar file hacia una variable
-
-    $imagen = $_FILES['imagen'];
-
-    // var_dump($imagen);
-    //exit;
-
-    if (!$titulo) {
-        $errores[] = "Debe añadir un titulo";
-    }
-
-    if (!$precio) {
-        $errores[] = "Debe añadir un precio";
-    }
-
-    if (strlen($descripcion) < 50) {
-        $errores[] = "Debe añadir una descripción y debe tener un minimo de 50 caracteres";
-    }
-
-    if (!$habitaciones) {
-        $errores[] = "Debe añadir un número de habitaciones";
-    }
-
-    if (!$wc) {
-        $errores[] = "Debe añadir un número de baños";
-    }
-
-    if (!$estacionamiento) {
-        $errores[] = "Debe añadir un número de estacionamiento";
-    }
-
-    if (!$vendedorId) {
-        $errores[] = "Elige un vendedor";
-    }
-
-    if(!$imagen['name'] || $imagen['error']){
-        $errores[] = "Tiene que ingresar una  ";
-    }
-
-
-
-    $medida = 1000 *1000;
-
-    if($imagen['size']>$medida){
-        $errores[] = "La imagén no debe ser tan pesada";
-    }
-
-
-    /*  echo "<pre>";
-    var_dump($errores);
-    echo   "</pre>"; */
-
-    //exit;
+    //validar
+    $errores = $propiedad->validar();
 
     //revisar que no haya errores, que el arreglo de errores este vacio para insertae datos a la base de datos
     if (empty($errores)) {
 
-        /**subuda de archivos */
-        /**Crear carpeta */
-        $carpetaImagen = '../../imagenes/';
-        if(!is_dir($carpetaImagen)){
-            mkdir($carpetaImagen);
+        //Crear la carpeta para subir imagenes
+        if(! is_dir(CARPETA_IMAGENES)){
+            mkdir(CARPETA_IMAGENES);
         }
 
-        //generar un nombre unico para img
-        $nombreImagen=  md5(uniqid(rand(),true)).".jpg";
-        
         //subir la imagen
-
-        move_uploaded_file($imagen['tmp_name'],$carpetaImagen . $nombreImagen );
-
-        
        
-        //insertar en la base de datos
-        $query = " INSERT INTO propiedades(titulo, precio,imagen, descripcion, habitaciones, wc, estacionamiento, vendedorId,creado) VALUES ('$titulo','$precio','$nombreImagen','$descripcion','$habitaciones','$wc','$estacionamiento','$vendedorId','$creado')";
-
-         echo $query;
-
-        $resultado = mysqli_query($db, $query);
-
+        //guarda la imagen en el servidor
+        $image->save(CARPETA_IMAGENES . $nombreImagen);
+       
+        //guarda en la base de datos
+        
+        $resultado= $propiedad->guardar();
+       //mensdaje de exito
         if ($resultado) {
             echo "Insertado Correctamente";
             header('Location: /admin?resultado=1');
@@ -168,42 +113,39 @@ incluirTemplate('header'); ?>
         <fieldset>
             <legend>Información General</legend>
             <label for="titulo">Titulo:</label>
-            <input type="text" id="titulo" placeholder="Titulo Propiedad" name="titulo" value="<?php echo $titulo;?>">
+            <input type="text" id="titulo" placeholder="Titulo Propiedad" name="titulo" value="<?php echo $titulo; ?>">
             <label for="precio">Precio:</label>
-            <input type="number" id="precio" placeholder="Precio Propiedad" name="precio" value="<?php echo $precio;?>">
+            <input type="number" id="precio" placeholder="Precio Propiedad" name="precio" value="<?php echo $precio; ?>">
             <label for="imagen">Imagen:</label>
             <input type="file" id="precio" accept="image/jpeg, image/png" name="imagen">
 
             <label for="descripcion">Descripcion</label>
-            <textarea name="descripcion" id="descripcion" >
-             <?php echo $descripcion;?>
+            <textarea name="descripcion" id="descripcion">
+             <?php echo $descripcion; ?>
             </textarea>
         </fieldset>
         <fieldset>
             <legend>Información de la Propiedad</legend>
             <label for="habitaciones">Habitaciones:</label>
-            <input type="number" id="habitaciones" placeholder="Ejemplo 3" min="1" max="9" name="habitaciones" value="<?php echo $habitaciones;?>">
+            <input type="number" id="habitaciones" placeholder="Ejemplo 3" min="1" max="9" name="habitaciones" value="<?php echo $habitaciones; ?>">
 
             <label for="wc">Baños:</label>
-            <input type="number" id="wc" placeholder="Ejemplo 3" min="1" max="9" name="wc" value="<?php echo $wc;?>">
+            <input type="number" id="wc" placeholder="Ejemplo 3" min="1" max="9" name="wc" value="<?php echo $wc; ?>">
 
             <label for="estacionamineto">Estacionamiento:</label>
-            <input type="number" id="estacionamiento" placeholder="Ejemplo 3" min="1" max="9" name="estacionamiento"value="<?php echo $estacionamiento;?>">
+            <input type="number" id="estacionamiento" placeholder="Ejemplo 3" min="1" max="9" name="estacionamiento" value="<?php echo $estacionamiento; ?>">
         </fieldset>
         <fieldset>
             <legend>Vendedor</legend>
-            <select name="vendedor">
+            <select name="vendedorId">
                 <option value="">----</option>
-                <?php 
-                  while($vendedor= mysqli_fetch_assoc($resultado)):
-                ?>
-                 <option 
-                 <?php echo $vendedorId === $vendedor['id'] ? 'selected': '';?>
-                 value="<?php echo $vendedor['id']?>"
-                 ><?php echo $vendedor['nombre']." ".$vendedor['apellido']?>
-                </option>
                 <?php
-                 endwhile;
+                while ($vendedor = mysqli_fetch_assoc($resultado)) :
+                ?>
+                    <option <?php echo $vendedorId === $vendedor['id'] ? 'selected' : ''; ?> value="<?php echo $vendedor['id'] ?>"><?php echo $vendedor['nombre'] . " " . $vendedor['apellido'] ?>
+                    </option>
+                <?php
+                endwhile;
                 ?>
             </select>
         </fieldset>

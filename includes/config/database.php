@@ -1,7 +1,7 @@
 <?php
 
 function conectarBD(): mysqli{
-    $db = mysqli_connect('localhost','root','root','bienes_raices');
+    $db = new mysqli('localhost','root','root','bienes_raices');
 
    /*  if($db){
       echo "Conexion exitosa";
@@ -15,4 +15,5 @@ function conectarBD(): mysqli{
     }
 
     return $db;
+    //echo "conectado ";
 }

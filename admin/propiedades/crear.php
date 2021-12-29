@@ -36,15 +36,12 @@ $resultado = mysqli_query($db, $consulta);
 $errores = Propiedad::getErrores();
 
 
-
-
-
 //ejecutare el código despues de que el usuario envia el formulario
 
 if ($_SERVER['REQUEST_METHOD'] === "POST") {
     
     //crear nueva instancia 
-    $propiedad = new Propiedad($_POST);
+    $propiedad = new Propiedad($_POST['propiedad']);
  
     /**subida de archivos */
       
@@ -53,8 +50,8 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
 
     //Setear la imagen
      //Realizanmos un resize a la imagen con Intervetion
-     if($_FILES['imagen']['tmp_name']){
-        $image = Image::make($_FILES['imagen']['tmp_name'])->fit(800, 600);
+     if($_FILES['propiedad']['tmp_name']['imagen']){
+        $image = Image::make($_FILES['propiedad']['tmp_name']['imagen'])->fit(800, 600);
         $propiedad->setImagen($nombreImagen);
      }
     

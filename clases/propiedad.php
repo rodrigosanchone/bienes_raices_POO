@@ -10,7 +10,7 @@ class Propiedad
 {
   //base de datos 
   protected static $db;  // al ser static el metodo tiene que ser static 
-  protected static  $columnasDB = ['id', 'titulo', 'precio', 'descripcion', 'habitaciones', 'wc', 'estacionamiento', 'creado', 'vendedorId','imagen'];
+  protected static  $columnasDB = ['id', 'titulo', 'precio', 'descripcion', 'habitaciones', 'wc', 'estacionamiento', 'creado', 'vendedorId', 'imagen'];
 
 
   //Errores y validaciones
@@ -54,6 +54,17 @@ class Propiedad
 
   public function guardar()
   {
+    if (isset($this->id)) {
+      //estamos actualizando 
+      $this->actualizar();
+    } else {
+      //estamos guardando o creando un nuevo registro
+      $this->crear();
+    }
+  }
+
+  public function crear()
+  {
 
     //Sanitizar la entrada de los datos
     $atributos = $this->sanitizarDatos();
@@ -70,7 +81,28 @@ class Propiedad
 
     $resultado = self::$db->query($query); // de esta forma se inserta
 
-    return $resultado; 
+    return $resultado;
+  }
+
+  public function actualizar()
+  {
+    //sanitizar los datos
+    $atributos = $this->sanitizarDatos();
+    $valores = [];
+    foreach ($atributos as $key => $value) {
+      $valores[] = "{$key}='{$value}'";
+    }
+    $query = " UPDATE propiedades SET ";
+    $query .= join(', ', $valores);
+    $query .= "WHERE id ='" . self::$db->escape_string($this->id) . "' ";
+    $query .= "LIMIT 1";
+
+    $resultado = self::$db->query($query);
+
+    if ($resultado) {
+      echo "Insertado Correctamente";
+      header('Location: /admin?resultado=2');
+    }
   }
 
   public function atributos()
@@ -105,9 +137,17 @@ class Propiedad
   //subida de archivos 
   public function setImagen($imagen)
   {
+    //Elimina la imagen anterior
+    if (isset($this->id)) {
+      //comprobar si el archivo existe
+      $existeArchivo = file_exists(CARPETA_IMAGENES . $this->imagen);
+      if ($existeArchivo) {
+        unlink(CARPETA_IMAGENES . $this->imagen);
+      }
+    }
     //asignar al atributo de imagen el nombre de la imagen
-    if($imagen){
-      $this->imagen= $imagen;
+    if ($imagen) {
+      $this->imagen = $imagen;
     }
   }
 
@@ -143,51 +183,74 @@ class Propiedad
       self::$errores[] = "Debe añadir un número de estacionamiento";
     }
 
-      if (!$this->vendedorId) {
+    if (!$this->vendedorId) {
       self::$errores[] = "Elige un vendedor";
     }
 
     if (!$this->imagen) {
-      self:: $errores[] = "Tiene que ingresar una imagen ";
+      self::$errores[] = "Tiene que ingresar una imagen ";
     }
 
-   
+
     return self::$errores;
   }
 
   //listar todas las propiedades
-  public static function all(){
+  public static function all()
+  {
 
-     $query= "SELECT * FROM propiedades";
-     
-     $resultado =self::consultarSQL($query);
-     
-     return $resultado;
+    $query = "SELECT * FROM propiedades";
+
+    $resultado = self::consultarSQL($query);
+
+    return $resultado;
   }
 
-  public static function consultarSQL($query){
+  //busca una propiedad por su id
+  public static function find($id)
+  {
+    $query = "SELECT * FROM propiedades WHERE id = ${id}";
+
+    $resultado = self::consultarSQL($query);
+    return array_shift($resultado);
+  }
+
+  public static function consultarSQL($query)
+  {
     //consultar la base de datos
-     $resultado = self::$db->query($query);
+    $resultado = self::$db->query($query);
     //Iterar los resultados
-    
-    $array=[];
-    while($registro= $resultado->fetch_assoc()){
+
+    $array = [];
+    while ($registro = $resultado->fetch_assoc()) {
       $array[] = self::crearObjeto($registro);
     }
-   // debuguear($array);
+    // debuguear($array);
     //liberar la memoria 
-     $resultado-> free();
+    $resultado->free();
     //retornar los resultados
     return $array;
   }
 
-  protected static function crearObjeto($registro){
-     $objeto = new self; //crea nuevos obejtos de la clase propiedad
-     foreach($registro as $key=> $value){
-       if(property_exists( $objeto, $key )){
-          $objeto->$key = $value;
-       }
-     }   
-     return $objeto;
+  protected static function crearObjeto($registro)
+  {
+    $objeto = new self; //crea nuevos obejtos de la clase propiedad
+    foreach ($registro as $key => $value) {
+      if (property_exists($objeto, $key)) {
+        $objeto->$key = $value;
+      }
+    }
+    return $objeto;
+  }
+
+  //sincronizar el objeto en memoria con los cambios realizado 
+  public function sincronizar($args = [])
+  {
+    //  debuguear($args);
+    foreach ($args as $key => $value) {
+      if (property_exists($this, $key) && !is_null($value)) {
+        $this->$key = $value;
+      }
+    }
   }
 }

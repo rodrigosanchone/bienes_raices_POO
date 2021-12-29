@@ -5,21 +5,11 @@ require '../includes/app.php';
 
 estaAutenticado();
 
+ use App\Propiedad;
+ //implementar un metodo para obtener todas las propiedades
 
-
- 
- //Importar la conexión  
- //require '../includes/config/database.php';
+ $propiedades = Propiedad::all();
   
- $db = conectarBD();
-
- //Escribir el Query
- $query= "SELECT * FROM propiedades";
-
- //Consultar la base de datos
-
-$resultadoConsulta= mysqli_query($db,$query); 
-
 //muestra mensjae condicional
  $resultado = $_GET['resultado']?? null;// este código busca este valor y  si no existe le asigna null
 
@@ -83,27 +73,26 @@ $resultadoConsulta= mysqli_query($db,$query);
              <th>Acciones</th>
            </tr>
          </thead>
-         <tbody>
+         <tbody><!--Mostrar los resultados -->
            <?php 
-             while($propiedad=mysqli_fetch_assoc($resultadoConsulta)):
+             foreach($propiedades as $propiedad):
             ?>
            <tr>
-             <td><?php echo $propiedad['id'];?></td>
-             <td><?php echo $propiedad['titulo'];?></td>
-             <td><img src="/imagenes/<?php echo $propiedad['imagen'];?>" alt="" class="imagenTabla"></td>
-             <td>$ <?php echo $propiedad['precio'];?></td>
+             <td><?php echo $propiedad->id;?></td>
+             <td><?php echo $propiedad->titulo;?></td>
+             <td><img src="/imagenes/<?php echo $propiedad->imagen;?>" alt="" class="imagenTabla"></td>
+             <td>$ <?php echo $propiedad->precio;?></td>
              <td>
                <form method="POST" class="w1-00">
-               <input type="hidden" name="id" value="<?php echo $propiedad['id']?>">  
+               <input type="hidden" name="id" value="<?php echo $propiedad->id?>">  
                <input  class="boton-rojo-block" type="submit" value="Eliminar">
                </form>
                
-               <a href="/admin/propiedades/actualizar.php?id=<?php  echo $propiedad['id'];?>" class="boton-amarillo-block">Actualizar</a>
+               <a href="/admin/propiedades/actualizar.php?id=<?php  echo $propiedad->id;?>" class="boton-amarillo-block">Actualizar</a>
              </td>
            </tr>
-           <?php
-             endwhile;
-           ?>
+           <?php endforeach;?>
+    
          </tbody>
        </table>
     </main>

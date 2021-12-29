@@ -10,6 +10,7 @@ debuguear($propiedad); */
 
 $db = conectarBD();
 
+$propiedad = new Propiedad;
 
 /* $propiedad = new Propiedad;
 
@@ -34,15 +35,9 @@ $resultado = mysqli_query($db, $consulta);
 //arreglo con mensaje de errores
 $errores = Propiedad::getErrores();
 
-debuguear($errores);
 
-$titulo = '';
-$precio = '';
-$descripcion = '';
-$habitaciones = '';
-$wc = '';
-$estacionamiento = '';
-$vendedorId = '';
+
+
 
 //ejecutare el código despues de que el usuario envia el formulario
 
@@ -52,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
     $propiedad = new Propiedad($_POST);
  
     /**subida de archivos */
-   
+      
     //generar un nombre unico para img
     $nombreImagen =  md5(uniqid(rand(), true)) . ".jpg";
 
@@ -63,25 +58,22 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
         $propiedad->setImagen($nombreImagen);
      }
     
-
     //validar
     $errores = $propiedad->validar();
 
     //revisar que no haya errores, que el arreglo de errores este vacio para insertae datos a la base de datos
     if (empty($errores)) {
 
-        //Crear la carpeta para subir imagenes
-        if(! is_dir(CARPETA_IMAGENES)){
+         //Crear la carpeta para subir imagenes
+         if(! is_dir(CARPETA_IMAGENES)){
             mkdir(CARPETA_IMAGENES);
         }
-
         //subir la imagen
        
         //guarda la imagen en el servidor
         $image->save(CARPETA_IMAGENES . $nombreImagen);
        
-        //guarda en la base de datos
-        
+        //guarda en la base de datos     
         $resultado= $propiedad->guardar();
        //mensdaje de exito
         if ($resultado) {
@@ -91,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
     }
 }
 
-//require '../../includes/funciones.php';
+
 
 incluirTemplate('header'); ?>
 <main class="contenedor sección">
@@ -110,45 +102,9 @@ incluirTemplate('header'); ?>
     endforeach;
     ?>
     <form action="/admin/propiedades/crear.php" class="formulario" method="POST" enctype="multipart/form-data">
-        <fieldset>
-            <legend>Información General</legend>
-            <label for="titulo">Titulo:</label>
-            <input type="text" id="titulo" placeholder="Titulo Propiedad" name="titulo" value="<?php echo $titulo; ?>">
-            <label for="precio">Precio:</label>
-            <input type="number" id="precio" placeholder="Precio Propiedad" name="precio" value="<?php echo $precio; ?>">
-            <label for="imagen">Imagen:</label>
-            <input type="file" id="precio" accept="image/jpeg, image/png" name="imagen">
-
-            <label for="descripcion">Descripcion</label>
-            <textarea name="descripcion" id="descripcion">
-             <?php echo $descripcion; ?>
-            </textarea>
-        </fieldset>
-        <fieldset>
-            <legend>Información de la Propiedad</legend>
-            <label for="habitaciones">Habitaciones:</label>
-            <input type="number" id="habitaciones" placeholder="Ejemplo 3" min="1" max="9" name="habitaciones" value="<?php echo $habitaciones; ?>">
-
-            <label for="wc">Baños:</label>
-            <input type="number" id="wc" placeholder="Ejemplo 3" min="1" max="9" name="wc" value="<?php echo $wc; ?>">
-
-            <label for="estacionamineto">Estacionamiento:</label>
-            <input type="number" id="estacionamiento" placeholder="Ejemplo 3" min="1" max="9" name="estacionamiento" value="<?php echo $estacionamiento; ?>">
-        </fieldset>
-        <fieldset>
-            <legend>Vendedor</legend>
-            <select name="vendedorId">
-                <option value="">----</option>
-                <?php
-                while ($vendedor = mysqli_fetch_assoc($resultado)) :
-                ?>
-                    <option <?php echo $vendedorId === $vendedor['id'] ? 'selected' : ''; ?> value="<?php echo $vendedor['id'] ?>"><?php echo $vendedor['nombre'] . " " . $vendedor['apellido'] ?>
-                    </option>
-                <?php
-                endwhile;
-                ?>
-            </select>
-        </fieldset>
+        <?php
+          include '../../includes/templates/formulario_propiedades.php'
+        ?>
         <input type="submit" value="Crear Propiedad" class="boton boton-verde">
     </form>
 </main>

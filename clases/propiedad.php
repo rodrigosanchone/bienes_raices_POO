@@ -47,8 +47,8 @@ class Propiedad
     $this->habitaciones = $args['habitaciones'] ?? '';
     $this->wc = $args['wc'] ?? '';
     $this->estacionamiento = $args['estacionamiento'] ?? '';
-    $this->vendedorId = $args['vendedorId'] ?? '';
-    $this->imagen = $args['imagen'];
+    $this->vendedorId = $args['vendedorId'] ?? 1;
+    //$this->imagen = $args['imagen'];
     $this->creado = date('Y/m/d');
   }
 
@@ -153,5 +153,41 @@ class Propiedad
 
    
     return self::$errores;
+  }
+
+  //listar todas las propiedades
+  public static function all(){
+
+     $query= "SELECT * FROM propiedades";
+     
+     $resultado =self::consultarSQL($query);
+     
+     return $resultado;
+  }
+
+  public static function consultarSQL($query){
+    //consultar la base de datos
+     $resultado = self::$db->query($query);
+    //Iterar los resultados
+    
+    $array=[];
+    while($registro= $resultado->fetch_assoc()){
+      $array[] = self::crearObjeto($registro);
+    }
+   // debuguear($array);
+    //liberar la memoria 
+     $resultado-> free();
+    //retornar los resultados
+    return $array;
+  }
+
+  protected static function crearObjeto($registro){
+     $objeto = new self; //crea nuevos obejtos de la clase propiedad
+     foreach($registro as $key=> $value){
+       if(property_exists( $objeto, $key )){
+          $objeto->$key = $value;
+       }
+     }   
+     return $objeto;
   }
 }

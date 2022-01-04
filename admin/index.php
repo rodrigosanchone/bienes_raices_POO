@@ -6,9 +6,14 @@ require '../includes/app.php';
 estaAutenticado();
 
  use App\Propiedad;
- //implementar un metodo para obtener todas las propiedades
+// use App\Vendedor;
+
+//implementar un metodo para obtener todas las propiedades
 
  $propiedades = Propiedad::all();
+// $vendedores= Vendedor::all();
+
+
   
 //muestra mensjae condicional
  $resultado = $_GET['resultado']?? null;// este código busca este valor y  si no existe le asigna null

@@ -11,6 +11,6 @@ require __DIR__ . "./../vendor/autoload.php"; //uso el __Dir__ para que el archi
 //conectarnos a la base de datos
 $db= conectarBD();
 
-use App\Propiedad;
+use App\ActiveRecord;
 
-Propiedad::setDB($db);
+ActiveRecord::setDB($db);

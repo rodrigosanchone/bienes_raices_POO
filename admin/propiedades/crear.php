@@ -3,23 +3,16 @@
 require '../../includes/app.php';
 
 use App\Propiedad;
+use App\Vendedor;
 use Intervention\Image\ImageManagerStatic as Image;
-
-
-$propiedad = new Propiedad;
-
-
 
 estaAutenticado();
 
-//base de datos
-$db = conectarBD();
-//consultar para obtener los vendedores
-$consulta  = "SELECT * FROM vendedores";
-$resultado = mysqli_query($db, $consulta);
-/*   echo "<pre>";
-  var_dump($_SERVER['REQUEST_METHOD']);
- echo "</pre>"; */
+$propiedad = new Propiedad;
+
+//Consulta para obtener todos los vendedores
+$vendedores= Vendedor::all();
+
 
 //arreglo con mensaje de errores
 $errores = Propiedad::getErrores();

@@ -4,21 +4,10 @@ require '../../includes/app.php';
 
 use App\Propiedad;
 use Intervention\Image\ImageManagerStatic as Image;
-/* $propiedad = new Propiedad;
 
-debuguear($propiedad); */
-
-$db = conectarBD();
 
 $propiedad = new Propiedad;
 
-/* $propiedad = new Propiedad;
-
-/* echo "<pre>";
-var_dump($propiedad);
-echo  "</pre>"; */
-/*
-debuguear($propiedad); */
 
 
 estaAutenticado();
@@ -39,44 +28,39 @@ $errores = Propiedad::getErrores();
 //ejecutare el código despues de que el usuario envia el formulario
 
 if ($_SERVER['REQUEST_METHOD'] === "POST") {
-    
+
     //crear nueva instancia 
     $propiedad = new Propiedad($_POST['propiedad']);
- 
+
     /**subida de archivos */
-      
+
     //generar un nombre unico para img
     $nombreImagen =  md5(uniqid(rand(), true)) . ".jpg";
 
     //Setear la imagen
-     //Realizanmos un resize a la imagen con Intervetion
-     if($_FILES['propiedad']['tmp_name']['imagen']){
+    //Realizanmos un resize a la imagen con Intervetion
+    if ($_FILES['propiedad']['tmp_name']['imagen']) {
         $image = Image::make($_FILES['propiedad']['tmp_name']['imagen'])->fit(800, 600);
         $propiedad->setImagen($nombreImagen);
-     }
-    
+    }
+
     //validar
     $errores = $propiedad->validar();
+
 
     //revisar que no haya errores, que el arreglo de errores este vacio para insertae datos a la base de datos
     if (empty($errores)) {
 
-         //Crear la carpeta para subir imagenes
-         if(! is_dir(CARPETA_IMAGENES)){
+
+        //Crear la carpeta para subir imagenes
+        if (!is_dir(CARPETA_IMAGENES)) {
             mkdir(CARPETA_IMAGENES);
         }
         //subir la imagen
-       
-        //guarda la imagen en el servidor
         $image->save(CARPETA_IMAGENES . $nombreImagen);
-       
+
         //guarda en la base de datos     
-        $resultado= $propiedad->guardar();
-       //mensdaje de exito
-        if ($resultado) {
-            echo "Insertado Correctamente";
-            header('Location: /admin?resultado=1');
-        }
+        $propiedad->guardar();
     }
 }
 
@@ -100,7 +84,7 @@ incluirTemplate('header'); ?>
     ?>
     <form action="/admin/propiedades/crear.php" class="formulario" method="POST" enctype="multipart/form-data">
         <?php
-          include '../../includes/templates/formulario_propiedades.php'
+        include '../../includes/templates/formulario_propiedades.php'
         ?>
         <input type="submit" value="Crear Propiedad" class="boton boton-verde">
     </form>

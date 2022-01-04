@@ -40,7 +40,7 @@ class Propiedad
 
   public function __construct($args = [])
   {
-    $this->id = $args['id'] ?? ''; // todo lo que es public se referencia con $this 
+    $this->id = $args['id'] ?? null; // todo lo que es public se referencia con $this 
     $this->titulo = $args['titulo'] ?? '';
     $this->precio = $args['precio'] ?? '';
     $this->descripcion = $args['descripcion'] ?? '';
@@ -48,19 +48,26 @@ class Propiedad
     $this->wc = $args['wc'] ?? '';
     $this->estacionamiento = $args['estacionamiento'] ?? '';
     $this->vendedorId = $args['vendedorId'] ?? 1;
-    //$this->imagen = $args['imagen'];
+  // $this->imagen = $args['imagen'];
     $this->creado = date('Y/m/d');
   }
 
-  public function guardar()
-  {
-    if (isset($this->id)) {
-      //estamos actualizando 
-      $this->actualizar();
-    } else {
-      //estamos guardando o creando un nuevo registro
-      $this->crear();
+ 
+
+    public function guardar(){
+    {
+      if (is_null($this->id)) {
+       
+        $this->crear();
+      } else {
+        //estamos guardando o creando un nuevo registro
+        $this->actualizar();
+      }
     }
+    
+    
+
+    
   }
 
   public function crear()
@@ -81,7 +88,12 @@ class Propiedad
 
     $resultado = self::$db->query($query); // de esta forma se inserta
 
-    return $resultado;
+   //mensdaje de exito
+   if ($resultado) {
+    header('Location: /admin?resultado=1');
+  
+}
+    
   }
 
   public function actualizar()
@@ -100,8 +112,21 @@ class Propiedad
     $resultado = self::$db->query($query);
 
     if ($resultado) {
-      echo "Insertado Correctamente";
+  
       header('Location: /admin?resultado=2');
+    }
+  }
+
+  //Eliminar un registro
+  public function eliminar($id)
+  {
+    /**eliminar propiedad de la base de datos */
+    $query = "DELETE FROM  propiedades WHERE id = " . self::$db->escape_string($this->id) . " LIMIT 1";
+    $resultado = self::$db->query($query);
+
+    if ($resultado) {
+      $this->borrarImagen($id);
+      header('location: /admin?resultado=3');
     }
   }
 
@@ -138,16 +163,24 @@ class Propiedad
   public function setImagen($imagen)
   {
     //Elimina la imagen anterior
-    if (isset($this->id)) {
-      //comprobar si el archivo existe
-      $existeArchivo = file_exists(CARPETA_IMAGENES . $this->imagen);
-      if ($existeArchivo) {
-        unlink(CARPETA_IMAGENES . $this->imagen);
-      }
+    if (!is_null($this->id)) { // si no esta cómo nulo
+      $this->borrarImagen();
     }
     //asignar al atributo de imagen el nombre de la imagen
     if ($imagen) {
       $this->imagen = $imagen;
+  
+    }
+  }
+
+  //borrar imagen de la carpeta
+  public function borrarImagen()
+  {
+    $existeArchivo = file_exists(CARPETA_IMAGENES . $this->imagen);
+ 
+    if ($existeArchivo) {
+     debuguear(unlink(CARPETA_IMAGENES . $this->imagen));
+     
     }
   }
 

@@ -16,21 +16,10 @@ estaAutenticado();
  if($_SERVER['REQUEST_METHOD']=== 'POST'){
     $id= $_POST['id'];
     $id= filter_var($id,FILTER_VALIDATE_INT); //VALIDO QUE SE UN NÚMERO
-    IF($id){
-      /**Eliminar la imagen */
-      $query= "SELECT imagen FROM propiedades WHERE id = ${id}";
-
-      $resultado= mysqli_query($db, $query);
-      $propiedad= mysqli_fetch_assoc($resultado);
-
-      unlink('../imagenes/'. $propiedad['imagen']);
-
-      /**eliminar propiedad de la base de datos */
-      $query = "DELETE FROM  propiedades WHERE id = ${id}"; 
-      $resultado = mysqli_query($db, $query);
-      if($resultado){
-         header('location: /admin?resultado=3');
-      } 
+    if($id){
+      $propiedad = Propiedad::find($id);
+      $propiedad->eliminar($id);
+      
     }
  }
 
@@ -84,8 +73,8 @@ estaAutenticado();
              <td>$ <?php echo $propiedad->precio;?></td>
              <td>
                <form method="POST" class="w1-00">
-               <input type="hidden" name="id" value="<?php echo $propiedad->id?>">  
-               <input  class="boton-rojo-block" type="submit" value="Eliminar">
+                <input type="hidden" name="id" value="<?php echo $propiedad->id?>">  
+                <input  class="boton-rojo-block" type="submit" value="Eliminar">
                </form>
                
                <a href="/admin/propiedades/actualizar.php?id=<?php  echo $propiedad->id;?>" class="boton-amarillo-block">Actualizar</a>

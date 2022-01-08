@@ -175,6 +175,18 @@ class ActiveRecord{
     return $resultado;
   }
 
+  //obtener un limiatdo número de propiedades
+  public static function get($cantidad)
+  {
+
+    $query = "SELECT * FROM " . static::$tabla ." LIMIT " . $cantidad;
+    
+   
+    $resultado = self::consultarSQL($query);
+     
+    return $resultado;
+  }
+
   //busca una propiedad por su id
   public static function find($id)
   {
@@ -194,7 +206,6 @@ class ActiveRecord{
     while ($registro = $resultado->fetch_assoc()) {
       $array[] = static::crearObjeto($registro);
     }
-    // debuguear($array);
     //liberar la memoria 
     $resultado->free();
     //retornar los resultados

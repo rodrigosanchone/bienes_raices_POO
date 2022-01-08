@@ -6,12 +6,12 @@ require '../includes/app.php';
 estaAutenticado();
 
  use App\Propiedad;
-// use App\Vendedor;
+ use App\Vendedor;
 
 //implementar un metodo para obtener todas las propiedades
 
  $propiedades = Propiedad::all();
-// $vendedores= Vendedor::all();
+ $vendedores= Vendedor::all();
 
 
   
@@ -22,9 +22,20 @@ estaAutenticado();
     $id= $_POST['id'];
     $id= filter_var($id,FILTER_VALIDATE_INT); //VALIDO QUE SE UN NÚMERO
     if($id){
-      $propiedad = Propiedad::find($id);
-      $propiedad->eliminar($id);
-      
+       $tipo = $_POST['tipo'];
+       if(validarTipoContenido($tipo)){
+         //compara lo que vamos a eliminar
+         if($tipo==='vendedor'){
+           $vendedor = Vendedor::find($id);
+          $vendedor->eliminar($id); 
+         }else if($tipo==='propiedad'){
+           $propiedad = Propiedad::find($id);
+          $propiedad->eliminar($id); 
+         }
+
+       }
+  
+        
     }
  }
 
@@ -37,19 +48,11 @@ estaAutenticado();
   incluirTemplate('header');?>
     <main class="contenedor sección">
       <?php
-        if(intval($resultado)===1):
-      ?>
-          <p class="alerta exito">Anuncio creado correctamente</p>
-       <?php 
-       elseif(intval($resultado)===2):
-       ?>
-        <p class="alerta exito">Anuncio actualizado correctamente</p>
-        <?php 
-       elseif(intval($resultado)===3):
-       ?>
-        <p class="alerta exito">Anuncio eliminado correctamente</p>
-      <?php
-        endif;
+       $mensaje = mostrarNotificaciones(intval($resultado));
+         if($mensaje){ ?>
+            <p class="alerta exito"><?php echo s($mensaje) ?></p>
+        <?php }
+       
       ?>
        <h1>Administrador de propiedades</h1>
        <a href="/admin/propiedades/crear.php" class="boton boton-verde">Crear Nueva Propiedad</a>
@@ -79,6 +82,7 @@ estaAutenticado();
              <td>
                <form method="POST" class="w1-00">
                 <input type="hidden" name="id" value="<?php echo $propiedad->id?>">  
+                <input type="hidden" name="tipo" value="propiedad">  
                 <input  class="boton-rojo-block" type="submit" value="Eliminar">
                </form>
                
@@ -89,10 +93,46 @@ estaAutenticado();
     
          </tbody>
        </table>
+       <h2>Vendedores</h2>
+       <a href="/admin/vendedores/crear.php" class="boton boton-amarillo">Ingresar un nuevo vendedor</a>
+       <table class="propiedades">
+         <thead>
+           <tr>
+             <th>ID</th>
+             <th>Nombre</th>
+             <th>Teléfono</th>
+             <th>Acciones</th>
+           </tr>
+         </thead>
+         <tbody><!--Mostrar los resultados -->
+           <?php 
+             foreach($vendedores as $vendedor):
+            ?>
+            
+
+           <tr>
+             <td><?php echo $vendedor->id;?></td>
+             <td><?php echo $vendedor->nombre . " " .$vendedor->apellido  ;?></td>
+             <td><?php echo $vendedor->telefono;?></td>
+             <td>
+               <form method="POST" class="w1-00">
+                <input type="hidden" name="id" value="<?php echo $vendedor->id?>">  
+                <input type="hidden" name="tipo" value="vendedor">  
+                <input  class="boton-rojo-block" type="submit" value="Eliminar">
+               </form>
+               
+               <a href="/admin/vendedores/actualizar.php?id=<?php  echo $vendedor->id;?>" class="boton-amarillo-block">Actualizar</a>
+             </td>
+           </tr>
+           <?php endforeach;?>
+    
+         </tbody>
+       </table>
+
     </main>
        <!--Cerrar la conexión-->
     <?php  
   
-     mysqli_close($db);
+   
   
 incluirTemplate('footer');?>

@@ -23,8 +23,7 @@ class ActiveRecord{
 
     public function guardar(){
     {
-      if (is_null($this->id)) {
-       
+      if (is_null($this->id)) {  
         $this->crear();
       } else {
         //estamos guardando o creando un nuevo registro
@@ -47,7 +46,7 @@ class ActiveRecord{
     //echo "Guardando en la base de datos";
     // debuguear($string);
     //insertar en la base de datos
-    $query = " INSERT INTO propiedades(";
+    $query = " INSERT INTO ".  static::$tabla. "(";
     $query .= join(', ', array_keys($atributos));
     $query .= " ) VALUES (' ";
     $query .= join("', '", array_values($atributos));
@@ -71,7 +70,7 @@ class ActiveRecord{
     foreach ($atributos as $key => $value) {
       $valores[] = "{$key}='{$value}'";
     }
-    $query = " UPDATE propiedades SET ";
+    $query = " UPDATE ".static::$tabla.  " SET ";
     $query .= join(', ', $valores);
     $query .= "WHERE id ='" . self::$db->escape_string($this->id) . "' ";
     $query .= "LIMIT 1";
@@ -79,8 +78,9 @@ class ActiveRecord{
     $resultado = self::$db->query($query);
 
     if ($resultado) {
-  
+      debuguear($query);
       header('Location: /admin?resultado=2');
+      
     }
   }
 
@@ -88,7 +88,7 @@ class ActiveRecord{
   public function eliminar($id)
   {
     /**eliminar propiedad de la base de datos */
-    $query = "DELETE FROM  propiedades WHERE id = " . self::$db->escape_string($this->id) . " LIMIT 1";
+    $query = "DELETE FROM " . static::$tabla . " WHERE id = " . self::$db->escape_string($this->id) . " LIMIT 1";
     $resultado = self::$db->query($query);
 
     if ($resultado) {
@@ -178,7 +178,7 @@ class ActiveRecord{
   //busca una propiedad por su id
   public static function find($id)
   {
-    $query = "SELECT * FROM propiedades WHERE id = ${id}";
+    $query = "SELECT * FROM " .  static::$tabla ." WHERE id = ${id}";
 
     $resultado = self::consultarSQL($query);
     return array_shift($resultado);

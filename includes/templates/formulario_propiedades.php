@@ -1,11 +1,9 @@
 <fieldset>
             <legend>Información General</legend>
             <label for="titulo">Titulo:</label>
-            <input type="text" id="titulo" placeholder="Titulo Propiedad" name="propiedad[titulo]" value="<?php
+            <input type="text" id="titulo" placeholder="Titulo Propiedad" name="propiedad[titulo]" value="<?php echo s($propiedad->titulo); ?>">
 
-use App\Vendedor;
-
-echo s($propiedad->titulo); ?>">
+//use App\Vendedor;
             <label for="precio">Precio:</label>
             <input type="number" id="precio" placeholder="Precio Propiedad" name="propiedad[precio]" value="<?php echo s($propiedad->precio); ?>">
             <label for="imagen">Imagen:</label>
